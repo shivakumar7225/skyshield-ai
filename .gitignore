@@ -1,0 +1,69 @@
+# ==========================================
+# SKYSHIELD AI — Git Ignore Rules
+# ==========================================
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build & Dist Outputs
+dist/
+dist-ssr/
+*.local
+
+# Environment & Secret Files (DO NOT COMMIT SECRETS)
+.env
+.env.local
+.env.*.local
+backend/.env
+*.pem
+*.key
+
+# Heavy Binary Archives
+package-lock.zip
+
+# Python & Backend
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+*.db
+*.sqlite3
+skyshield.db
+backend/skyshield.db
+backend/data/imdaa/*
+!backend/data/imdaa/.gitkeep
+backend/data/qpe/*
+!backend/data/qpe/.gitkeep
+backend/data/dem/*
+!backend/data/dem/.gitkeep
+
+# IDE & OS Generated Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# Logs & Temporary Files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
