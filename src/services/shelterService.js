@@ -6,9 +6,12 @@ import { apiClient } from './apiClient';
 import { MOCK_SHELTERS } from '../data/mockShelters';
 
 export const shelterService = {
-  async getNearbyShelters(location = 'Kukatpally, Hyderabad') {
+  async getNearbyShelters(location = 'Kukatpally, Hyderabad', coords = null) {
     try {
-      const data = await apiClient.get('/api/shelters/nearby');
+      const params = {};
+      if (coords?.lat) params.lat = coords.lat;
+      if (coords?.lng) params.lon = coords.lng;
+      const data = await apiClient.get('/api/shelters/nearby', params);
       if (Array.isArray(data) && data.length > 0) {
         return data;
       }

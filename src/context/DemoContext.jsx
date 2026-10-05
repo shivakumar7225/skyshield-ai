@@ -155,9 +155,10 @@ export function DemoProvider({ children }) {
   };
 
   // Add SOS
-  const addSOS = async (category, note) => {
+  const addSOS = async (category, note, coordsOverride = null) => {
     const newId = `#1048`;
     setLastSosSentId(newId);
+    const activeCoords = coordsOverride || selectedCoords || { lat: 17.4947, lng: 78.3996 };
 
     // Call real backend API
     try {
@@ -165,7 +166,8 @@ export function DemoProvider({ children }) {
         citizenName: citizenUser.name,
         mobile: citizenUser.mobile,
         category,
-        location: selectedLocation
+        location: selectedLocation,
+        coords: activeCoords
       });
       if (res && res.request) {
         setSosList((prev) => [res.request, ...prev]);
@@ -181,7 +183,7 @@ export function DemoProvider({ children }) {
       badge: '🔴 Urgent',
       severity: 'severe',
       location: selectedLocation,
-      coords: { lat: 17.4947, lng: 78.3996 },
+      coords: { lat: activeCoords.lat, lng: activeCoords.lng },
       reportedBy: `${citizenUser.name} (Citizen App)`,
       mobile: citizenUser.mobile,
       timeAgo: 'Just now',

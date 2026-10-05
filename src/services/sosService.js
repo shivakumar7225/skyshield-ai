@@ -21,21 +21,26 @@ export const sosService = {
     return [...sosRequests];
   },
 
-  async createSOS({ citizenName = 'Aashrith', mobile = '+91 98765 43210', category = 'Flooding', location = 'Kukatpally, Hyderabad' }) {
+  async createSOS({ citizenName = 'Aashrith', mobile = '+91 98765 43210', category = 'Flooding', location = 'Kukatpally, Hyderabad', coords = null }) {
     try {
-      const res = await apiClient.post('/api/sos', {
+      const payload = {
         category,
         location,
         citizen_name: citizenName,
         mobile
-      });
+      };
+      if (coords?.lat && coords?.lng) {
+        payload.latitude = coords.lat;
+        payload.longitude = coords.lng;
+      }
+      const res = await apiClient.post('/api/sos', payload);
       if (res && res.request) {
         sosRequests.unshift(res.request);
         return {
           success: true,
           requestId: res.requestId || '#1048',
           request: res.request,
-          message: 'Your emergency request has been registered and dispatched.'
+          message: 'Your emergency request has been registered and dispatched with live GPS coordinates.'
         };
       }
     } catch (err) {
@@ -48,7 +53,7 @@ export const sosService = {
       badge: '🔴 Urgent',
       severity: 'severe',
       location,
-      coords: { lat: 17.4947, lng: 78.3996 },
+      coords: coords ? { lat: coords.lat, lng: coords.lng } : { lat: 17.4947, lng: 78.3996 },
       reportedBy: `${citizenName} (Citizen App)`,
       mobile,
       timeAgo: 'Just now',

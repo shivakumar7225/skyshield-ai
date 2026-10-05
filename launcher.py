@@ -223,8 +223,10 @@ class SkyShieldLauncher:
     def _run_servers(self):
         # 1. Start Backend
         self.log("Starting FastAPI Backend on port 8000...")
+        venv_py = os.path.join(BACKEND_DIR, ".venv", "Scripts", "python.exe")
+        py_exe = venv_py if os.path.exists(venv_py) else sys.executable
         backend_cmd = [
-            sys.executable, "-m", "uvicorn", "app.main:app",
+            py_exe, "-m", "uvicorn", "app.main:app",
             "--host", "0.0.0.0", "--port", "8000"
         ]
         try:

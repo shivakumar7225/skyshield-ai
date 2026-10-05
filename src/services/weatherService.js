@@ -9,9 +9,12 @@ export const weatherService = {
   /**
    * Get current hyper-local weather risk for given location and active simulation state
    */
-  async getCurrentRisk(location = 'Medchal, Telangana, India', stateKey = 'SEVERE') {
+  async getCurrentRisk(location = 'Medchal, Telangana, India', coords = null, stateKey = 'SEVERE') {
     try {
-      const data = await apiClient.get('/api/risk/current', { location });
+      const params = { location };
+      if (coords?.lat) params.lat = coords.lat;
+      if (coords?.lng) params.lon = coords.lng;
+      const data = await apiClient.get('/api/risk/current', params);
       if (data && data.risks) {
         return data;
       }
@@ -84,9 +87,12 @@ export const weatherService = {
   /**
    * Get 6-hour nowcast timeline
    */
-  async getForecast(location = 'Medchal, Telangana, India', stateKey = 'SEVERE') {
+  async getForecast(location = 'Medchal, Telangana, India', coords = null, stateKey = 'SEVERE') {
     try {
-      const timeline = await apiClient.get('/api/risk/timeline', { location });
+      const params = { location };
+      if (coords?.lat) params.lat = coords.lat;
+      if (coords?.lng) params.lon = coords.lng;
+      const timeline = await apiClient.get('/api/risk/timeline', params);
       if (timeline && timeline.NOW) {
         return timeline;
       }

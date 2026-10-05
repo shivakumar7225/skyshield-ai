@@ -13,6 +13,16 @@ async def search_locations(q: str = Query(..., min_length=1)) -> List[Dict[str, 
     """
     return await geocoding_service.search(q)
 
+@router.get("/reverse")
+async def reverse_geocode_location(
+    lat: float = Query(..., ge=6.0, le=37.5, description="Latitude inside Republic of India"),
+    lon: float = Query(..., ge=68.0, le=97.5, description="Longitude inside Republic of India")
+) -> Dict[str, Any]:
+    """
+    Reverse geocode real-time GPS coordinates to Indian administrative sector / village / mandal.
+    """
+    return await geocoding_service.reverse(lat, lon)
+
 @router.get("/presets")
 def get_presets() -> List[Dict[str, Any]]:
     return [

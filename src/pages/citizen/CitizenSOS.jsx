@@ -5,14 +5,14 @@ import SimulationBadge from '../../components/common/SimulationBadge';
 import { AlertOctagon, CheckCircle2, ShieldAlert, ArrowLeft, Send, PhoneCall } from 'lucide-react';
 
 export default function CitizenSOS() {
-  const { navigateTo, addSOS, activeTab, setActiveTab, selectedLocation, lastSosSentId } = useDemo();
+  const { navigateTo, addSOS, activeTab, setActiveTab, selectedLocation, selectedCoords, lastSosSentId } = useDemo();
   const [selectedCategory, setSelectedCategory] = useState('Flooding');
   const [additionalNote, setAdditionalNote] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [confirmedId, setConfirmedId] = useState('#1048');
 
   const handleSendSOS = async () => {
-    const id = await addSOS(selectedCategory, additionalNote);
+    const id = await addSOS(selectedCategory, additionalNote, selectedCoords);
     setConfirmedId(id || '#1048');
     setIsSubmitted(true);
   };
@@ -161,6 +161,48 @@ export default function CitizenSOS() {
               <p style={{ fontSize: '13px', color: '#94A3B8' }}>
                 Press the emergency button below to transmit your location coordinates and threat type to field NDRF/GHMC responders.
               </p>
+            </div>
+
+            {/* Live GPS Telemetry Box */}
+            <div
+              style={{
+                background: 'rgba(15, 23, 42, 0.9)',
+                border: '1.5px solid rgba(56, 189, 248, 0.35)',
+                borderRadius: '12px',
+                padding: '12px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '8px',
+                    background: 'rgba(56, 189, 248, 0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '16px'
+                  }}
+                >
+                  📍
+                </div>
+                <div>
+                  <div style={{ fontSize: '13px', fontWeight: 800, color: '#F8FAFC' }}>
+                    {selectedLocation}
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#38BDF8', fontFamily: 'var(--font-mono)' }}>
+                    WGS84: {selectedCoords ? `${selectedCoords.lat.toFixed(4)}°N, ${selectedCoords.lng.toFixed(4)}°E` : '17.4947°N, 78.3996°E'}
+                  </div>
+                </div>
+              </div>
+              <span style={{ fontSize: '10px', padding: '4px 8px', borderRadius: '6px', background: 'rgba(16, 185, 129, 0.2)', color: '#10B981', fontWeight: 800, border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                GPS ATTACHED
+              </span>
             </div>
 
             {/* Large SEND SOS Button */}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDemo } from '../../context/DemoContext';
-import { Search, MapPin, CheckCircle, Navigation, ArrowRight, Shield } from 'lucide-react';
+import { Search, MapPin, CheckCircle, Navigation, ArrowRight, Shield, LocateFixed, Loader2, AlertCircle } from 'lucide-react';
 import { locationService } from '../../services/locationService';
 import SimulationBadge from '../../components/common/SimulationBadge';
 
@@ -11,6 +11,9 @@ export default function CitizenLocation() {
   const [chosenCoords, setChosenCoords] = useState(selectedCoords || { lat: 17.6297, lng: 78.4814 });
   const [locationsList, setLocationsList] = useState(locationService.getPresets());
   const [searching, setSearching] = useState(false);
+  const [gpsLoading, setGpsLoading] = useState(false);
+  const [gpsError, setGpsError] = useState('');
+  const [gpsAccuracy, setGpsAccuracy] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -33,6 +36,28 @@ export default function CitizenLocation() {
       clearTimeout(timeout);
     };
   }, [searchTerm]);
+
+  const handleGetLiveGPS = async () => {
+    setGpsLoading(true);
+    setGpsError('');
+    try {
+      const pos = await locationService.getCurrentPosition();
+      setGpsAccuracy(pos.accuracy);
+      const rev = await locationService.reverseGeocode(pos.lat, pos.lng);
+      if (rev.isInsideIndia === false) {
+        setGpsError(`Coordinates (${pos.lat.toFixed(3)}°N, ${pos.lng.toFixed(3)}°E) are outside the Republic of India. SkyShield AI operates strictly within Indian territory.`);
+        return;
+      }
+      setChosen(rev.name);
+      setChosenCoords({ lat: pos.lat, lng: pos.lng });
+      setSelectedLocation(rev.name);
+      setSelectedCoords({ lat: pos.lat, lng: pos.lng });
+    } catch (err) {
+      setGpsError(err.message || 'Unable to access live GPS location. Please check browser permissions.');
+    } finally {
+      setGpsLoading(false);
+    }
+  };
 
   const handleStartMonitoring = () => {
     setSelectedLocation(chosen);
@@ -59,6 +84,82 @@ export default function CitizenLocation() {
           SkyShield AI delivers 2–6 hour micro-basin nowcasts tailored to your precise elevation.
         </p>
 
+        {/* 1-Tap Live GPS Button */}
+        <div
+          style={{
+            marginBottom: '20px',
+            padding: '16px',
+            background: 'linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(15, 23, 42, 0.8) 100%)',
+            border: '1.5px solid rgba(56, 189, 248, 0.4)',
+            borderRadius: '14px',
+            boxShadow: '0 4px 20px rgba(14, 165, 233, 0.15)'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div
+                style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: '#10B981',
+                  boxShadow: '0 0 10px #10B981',
+                  animation: 'pulse 2s infinite'
+                }}
+              />
+              <span style={{ fontSize: '11px', fontWeight: 800, color: '#38BDF8', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                Real-Time Device GPS
+              </span>
+            </div>
+            {gpsAccuracy && (
+              <span style={{ fontSize: '11px', color: '#10B981', fontWeight: 700 }}>
+                ±{gpsAccuracy}m Accuracy
+              </span>
+            )}
+          </div>
+
+          <button
+            onClick={handleGetLiveGPS}
+            disabled={gpsLoading}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              background: 'linear-gradient(90deg, #0284C7 0%, #0369A1 100%)',
+              border: 'none',
+              borderRadius: '10px',
+              color: '#FFFFFF',
+              fontSize: '14px',
+              fontWeight: 700,
+              cursor: gpsLoading ? 'wait' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              boxShadow: '0 2px 12px rgba(2, 132, 199, 0.35)',
+              transition: 'all 0.2s'
+            }}
+          >
+            {gpsLoading ? (
+              <>
+                <Loader2 size={18} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
+                <span>Acquiring WGS84 GPS Position...</span>
+              </>
+            ) : (
+              <>
+                <LocateFixed size={18} />
+                <span>📍 Use My Current Location (Device GPS)</span>
+              </>
+            )}
+          </button>
+
+          {gpsError && (
+            <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '6px', color: '#F87171', fontSize: '12px' }}>
+              <AlertCircle size={15} />
+              <span>{gpsError}</span>
+            </div>
+          )}
+        </div>
+
         {/* Search Bar */}
         <div style={{ position: 'relative', marginBottom: '20px' }}>
           <Search size={18} style={{ position: 'absolute', left: '12px', top: '13px', color: '#64748B' }} />
@@ -66,7 +167,7 @@ export default function CitizenLocation() {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search city, area or pincode (e.g. 500072)"
+            placeholder="Or search city, mandal, village or pincode (e.g. 500072)"
             style={{
               width: '100%',
               padding: '12px 14px 12px 40px',
@@ -100,7 +201,7 @@ export default function CitizenLocation() {
                   {chosen}
                 </div>
                 <div style={{ fontSize: '12px', color: '#94A3B8' }}>
-                  Micro-basin Zone A • Elevation: 540m
+                  {chosenCoords ? `${chosenCoords.lat.toFixed(4)}°N, ${chosenCoords.lng.toFixed(4)}°E` : 'Micro-basin Zone A'} • Elevation: ~540m MSL
                 </div>
               </div>
             </div>

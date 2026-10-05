@@ -18,15 +18,20 @@ import {
   Building2,
   BellRing,
   BookOpen,
-  Sparkles
+  Sparkles,
+  LocateFixed
 } from 'lucide-react';
 import AnimatedCounter from '../../components/common/AnimatedCounter';
 import { weatherService } from '../../services/weatherService';
+import { locationService } from '../../services/locationService';
 
 export default function CitizenHome() {
   const {
     citizenUser,
     selectedLocation,
+    selectedCoords,
+    setSelectedCoords,
+    setSelectedLocation,
     activeWeatherData,
     demoState,
     navigateTo,
@@ -38,14 +43,15 @@ export default function CitizenHome() {
   const [selectedTimeKey, setSelectedTimeKey] = useState('NOW');
   const [liveRisk, setLiveRisk] = useState(null);
   const [liveTimeline, setLiveTimeline] = useState(null);
+  const [quickGpsLoading, setQuickGpsLoading] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     async function fetchLiveWeather() {
       try {
         const [riskRes, timelineRes] = await Promise.all([
-          weatherService.getCurrentRisk(selectedLocation, demoState),
-          weatherService.getForecast(selectedLocation, demoState)
+          weatherService.getCurrentRisk(selectedLocation, selectedCoords, demoState),
+          weatherService.getForecast(selectedLocation, selectedCoords, demoState)
         ]);
         if (mounted) {
           if (riskRes) setLiveRisk(riskRes);
@@ -57,7 +63,23 @@ export default function CitizenHome() {
     }
     fetchLiveWeather();
     return () => { mounted = false; };
-  }, [selectedLocation, demoState]);
+  }, [selectedLocation, selectedCoords, demoState]);
+
+  const handleQuickGPS = async () => {
+    setQuickGpsLoading(true);
+    try {
+      const pos = await locationService.getCurrentPosition();
+      const rev = await locationService.reverseGeocode(pos.lat, pos.lng);
+      if (rev.isInsideIndia !== false) {
+        setSelectedCoords({ lat: pos.lat, lng: pos.lng });
+        setSelectedLocation(rev.name);
+      }
+    } catch (e) {
+      console.warn('GPS error:', e);
+    } finally {
+      setQuickGpsLoading(false);
+    }
+  };
 
   const isSevere = demoState === 'SEVERE';
   const isWarning = demoState === 'WARNING';
@@ -292,26 +314,51 @@ export default function CitizenHome() {
           </div>
         </button>
 
-        {/* Profile Avatar Button */}
-        <button
-          onClick={() => navigateTo('citizen-profile')}
-          title="Open Profile"
-          style={{
-            width: '36px',
-            height: '36px',
-            borderRadius: '50%',
-            background: 'rgba(255, 255, 255, 0.08)',
-            border: '1.5px solid rgba(56, 189, 248, 0.4)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#38BDF8',
-            cursor: 'pointer',
-            transition: 'all 0.2s'
-          }}
-        >
-          <User size={18} />
-        </button>
+        {/* Live GPS Quick Sync Button */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button
+            onClick={handleQuickGPS}
+            disabled={quickGpsLoading}
+            title="Auto-detect Live GPS Position"
+            style={{
+              padding: '6px 10px',
+              borderRadius: '8px',
+              background: 'rgba(14, 165, 233, 0.15)',
+              border: '1px solid rgba(56, 189, 248, 0.35)',
+              color: '#38BDF8',
+              fontSize: '11px',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              cursor: quickGpsLoading ? 'wait' : 'pointer'
+            }}
+          >
+            <LocateFixed size={13} style={{ animation: quickGpsLoading ? 'spin 1s linear infinite' : 'none' }} />
+            <span>{quickGpsLoading ? 'GPS...' : 'Live GPS'}</span>
+          </button>
+
+          {/* Profile Avatar Button */}
+          <button
+            onClick={() => navigateTo('citizen-profile')}
+            title="Open Profile"
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: '1.5px solid rgba(56, 189, 248, 0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#38BDF8',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+          >
+            <User size={18} />
+          </button>
+        </div>
       </header>
 
       {/* Main Scrollable Content Area */}
