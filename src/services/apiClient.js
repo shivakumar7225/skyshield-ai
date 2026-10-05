@@ -45,8 +45,9 @@ class ApiClient {
 
       return await response.json();
     } catch (err) {
-      // If relative fetch failed, try direct localhost:8000
-      if (!this.baseUrl && !url.startsWith('http')) {
+      // If relative fetch failed, try direct localhost:8000 ONLY when running on localhost
+      const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      if (isLocal && !this.baseUrl && !url.startsWith('http')) {
         try {
           const directUrl = `http://localhost:8000${endpoint}`;
           const directResp = await fetch(directUrl, { ...options, headers });

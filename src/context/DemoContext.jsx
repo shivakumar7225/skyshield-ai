@@ -70,6 +70,9 @@ export function DemoProvider({ children }) {
 
     function connectWebSocket() {
       try {
+        const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+        if (!isLocal) return;
+
         const wsUrl = 'ws://localhost:8000/ws/officer';
         ws = new WebSocket(wsUrl);
 
