@@ -2,6 +2,7 @@
   "name": "skyshield-ai",
   "private": true,
   "version": "1.0.0",
+  "homepage": "https://skyshield-ai-sih.vercel.app",
   "type": "module",
   "scripts": {
     "dev": "vite",

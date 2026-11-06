@@ -1,11 +1,13 @@
 # 🛡️ SkyShield AI (VarshDristhi) — AI-Powered Cloudburst & Flash Flood Early Warning System
 
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-skyshield--ai--sih.vercel.app-00df8f?style=for-the-badge&logo=vercel&logoColor=black)](https://skyshield-ai-sih.vercel.app/)
 [![SIH 2026 Selected](https://img.shields.io/badge/SIH%202026-Selected-brightgreen.svg)](https://sih.gov.in)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/Frontend-React%20%7C%20Vite-61DAFB.svg)](https://reactjs.org/)
 [![PostgreSQL](https://img.shields.io/badge/GIS-PostGIS%20%2F%20SQLite-336791.svg)](https://postgis.net/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+> 🌐 **Live Web Application:** [https://skyshield-ai-sih.vercel.app/](https://skyshield-ai-sih.vercel.app/)  
 > **Smart India Hackathon Problem Statement 26077 — Ministry of Earth Sciences (MoES)**  
 > *AI-Driven Hyper-Local Early Warning System for Severe Weather Nowcasting, Cloudburst Detection, and Tactical Disaster Response*
 
@@ -122,6 +124,18 @@ SkyShield AI is designed with secure fallback defaults. All API keys are configu
 18. `response_assignments` — Incident dispatch orders and completion timestamps.
 19. `audit_logs` — Immutable audit trail of operational approvals.
 20. `system_health` & `notifications` — Provider metrics and outbound notification queues.
+
+---
+
+## 🌐 Live Cloud Deployment
+
+Experience the interactive system directly in your browser without local installation:
+
+👉 **[Launch SkyShield AI Live WebApp (Vercel)](https://skyshield-ai-sih.vercel.app/)**
+
+- **Live Device GPS**: Seamlessly pinpoints your real-time coordinates and fetches local meteorological stability indices and CartoDEM elevation.
+- **Officer Incident Command Center**: Full situational radar display, hazard simulation timeline, responder squads, and bulletin broadcast.
+- **Citizen SOS Portal**: 1-Tap distress dispatch telemetry and shelter evacuation routes.
 
 ---
 
